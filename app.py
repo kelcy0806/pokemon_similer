@@ -23,7 +23,8 @@ if st.sidebar.button("GEUSS!!"):
     st.write(your_df)
 
     # 予測の実行
-    response = requests.post("http://localhost:8000/guess", json=your_feature)
+    #response = requests.post("https://pokemon-predict.onrender.com/guess", json=your_feature) #デプロイ用
+    response = requests.post("http://localhost:8000/guess", json=your_feature) #ローカル用
     pokemon = response.json()["Pokemon"]
     pokemon_image = response.json()["pokemon_image"]
 
@@ -40,7 +41,7 @@ if st.sidebar.button("GEUSS!!"):
     st.write(str(pokemon_image))
     st.write(repr(str(pokemon_image)))
     #image = Image.open(repr(str(pokemon_image)))
-    image = Image.open("C:\\Users\\81805\\Desktop\\ポケモン＿練習用\\1.png")
+    image = Image.open("./1.png")
     #image = Image.open("https://github.com/PokeAPI/sprites/blob/master/sprites/pokemon/1.png")
     st.image(image, caption='サンプル',use_column_width=True)
 

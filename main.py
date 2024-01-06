@@ -34,7 +34,7 @@ class pokemon_data(BaseModel):
     #your_weight: float
 
 # 学習済みのモデルの読み込み
-pokemon_df = pd.read_csv("C:\\Users\\81805\\Desktop\\ポケモン＿練習用\\pokemon_data2.csv")
+pokemon_df = pd.read_csv("./pokemon_data2.csv")
 
 # トップページ
 @app.get('/')
