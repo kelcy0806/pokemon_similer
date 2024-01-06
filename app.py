@@ -23,8 +23,8 @@ if st.sidebar.button("GEUSS!!"):
     st.write(your_df)
 
     # 予測の実行
-    #response = requests.post("https://pokemon-predict.onrender.com/guess", json=your_feature) #デプロイ用
-    response = requests.post("http://localhost:8000/guess", json=your_feature) #ローカル用
+    response = requests.post("https://pokemon-predict.onrender.com/guess", json=your_feature) #デプロイ用
+    #response = requests.post("http://localhost:8000/guess", json=your_feature) #ローカル用
     pokemon = response.json()["Pokemon"]
     pokemon_image = response.json()["pokemon_image"]
 
