@@ -1,0 +1,8 @@
+streamlit
+numpy
+pandas
+scikit-learn
+uvicorn
+fastapi
+pillow
+python-multipart
