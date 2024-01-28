@@ -42,8 +42,8 @@ if st.sidebar.button("GEUSS!!"):
     st.write(your_df[['your_height','your_weight']])
 
     # 予測の実行
-    #response = requests.post("https://pokemon-predict.onrender.com/guess", json=your_feature) #デプロイ用
-    response = requests.post("http://localhost:5001/guess", json=your_feature) #ローカル用
+    response = requests.post("https://pokemon-predict.onrender.com/guess", json=your_feature) #デプロイ用
+    #response = requests.post("http://localhost:5001/guess", json=your_feature) #ローカル用
     battle_style = response.json()["prediction"]
     all = response.json()
 
