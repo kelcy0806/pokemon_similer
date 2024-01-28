@@ -11,7 +11,7 @@ your_weight = st.sidebar.slider('your weight (kg)', min_value=0.0, max_value=200
 
 your_feature ={
     "your_height": your_height,
-    "your_weight": your_weight
+    "your_weight": your_weight,
 }
 
 

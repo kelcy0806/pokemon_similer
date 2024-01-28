@@ -26,12 +26,6 @@ class pokemon_data(BaseModel):
     height: float
     weight: float
 
-#T = TypeVar('T')
-
-#class your_feature(Generic[T]):
-    # クラスの実装
-    #your_height: float
-    #your_weight: float
 
 # 学習済みのモデルの読み込み
 pokemon_df = pd.read_csv("./pokemon_data2.csv")
