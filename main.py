@@ -37,7 +37,10 @@ class pokemon_data(BaseModel):
 pokemon_df = pd.read_csv("./pokemon_data2.csv")
 
 # 学習済みのモデルの読み込み
-model = pickle.load(open('./models/Pokemon_model', 'rb'))
+model = pickle.load(open('./models/pokemon_model', 'rb')) #相対パス
+#model = pickle.load(open('https://github.com/kelcy0806/pokemon_similer/blob/master/models/pokemon_model', 'rb')) #絶対パス
+
+
 
 # トップページ
 @app.get('/')

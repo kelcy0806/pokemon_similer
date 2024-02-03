@@ -35,15 +35,15 @@ your_feature ={
 targets = ['先陣きって荒らしまくる切り込み隊長','味方を引っ張るリーダー','後続を支援する起点作りの職人','じわじわと敵を追い詰める仕事人','なんでもこなせるマルチプレイヤー','単体でつよい絶対的エース','敵の攻撃を受けて、サイクルを回すタンク','必殺のコンボで相手を倒す暗殺者','何してくるかわからないミステリアスな策略家']
 
 
-if st.sidebar.button("GEUSS!!"):
+if st.sidebar.button("GUESS!!"):
     # 入力された説明変数の表示
     st.write('## Input Value')
     your_df = pd.DataFrame(your_feature, index=["あなた"])
     st.write(your_df[['your_height','your_weight']])
 
     # 予測の実行
-    response = requests.post("https://pokemon-predict.onrender.com/guess", json=your_feature) #デプロイ用
-    #response = requests.post("http://localhost:5001/guess", json=your_feature) #ローカル用
+    #response = requests.post("https://pokemon-predict.onrender.com/guess", json=your_feature) #デプロイ用
+    response = requests.post("http://localhost:5002/guess", json=your_feature) #ローカル用
     battle_style = response.json()["prediction"]
     all = response.json()
 
