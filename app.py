@@ -6,20 +6,20 @@ import numpy as np
 from PIL import Image
 from io import BytesIO
 
-st.title('pokemon similer')
+st.title('pokemon diagnosis')
 st.write('このサイトでは、あなたのスタイル・性格からどんな体型のポケモンなのか？どんな戦い方していくのかを提示してくれます')
 
 st.sidebar.header('Input Features')
 your_height = st.sidebar.slider('your height (m)', min_value=1.00, max_value=2.00, step=0.01)
 your_weight = st.sidebar.slider('your weight (kg)', min_value=0.0, max_value=200.0, step=0.1)
 
-st.sidebar.write('あなたの性格')
-hp = st.sidebar.slider('情熱的< - >静観的', min_value=-1.00, max_value=1.00, step=0.2)
-attack = st.sidebar.slider('大胆< - >慎重', min_value=-1.00, max_value=1.00, step=0.2)
-bold = st.sidebar.slider('せっかち< - >おっとり', min_value=-1.00, max_value=1.00, step=0.2)
-clitical = st.sidebar.slider('C', min_value=-1.00, max_value=1.00, step=0.2)
-deffence = st.sidebar.slider('D', min_value=-1.00, max_value=1.00, step=0.2)
-spped = st.sidebar.slider('S', min_value=-1.00, max_value=1.00, step=0.2)
+st.sidebar.header('あなたの性格')
+hp = st.sidebar.slider('感情的< - >理性的', min_value=-1.00, max_value=1.00, value = 0.0,step=0.2)
+clitical = st.sidebar.slider('外向的< - >内向的', min_value=-1.00, max_value=1.00, value = 0.0, step=0.2)
+deffence = st.sidebar.slider('主体的< - >受動的', min_value=-1.00, max_value=1.00, value = 0.0, step=0.2)
+attack = st.sidebar.slider('革新的< - >保守的', min_value=-1.00, max_value=1.00, value = 0.0, step=0.2)
+bold = st.sidebar.slider('効率重視< - >正確重視', min_value=-1.00, max_value=1.00, value = 0.0, step=0.2)
+spped = st.sidebar.slider('多数派< - >少数派', min_value=-1.00, max_value=1.00,value = 0.0, step=0.2)
 
 your_feature ={
     "your_height": your_height,
@@ -32,18 +32,18 @@ your_feature ={
     "すばやさ":spped,
 }
 
-targets = ['先陣きって荒らしまくる切り込み隊長','味方を引っ張るリーダー','後続を支援する起点作りの職人','じわじわと敵を追い詰める仕事人','なんでもこなせるマルチプレイヤー','単体でつよい絶対的エース','敵の攻撃を受けて、サイクルを回すタンク','必殺のコンボで相手を倒す暗殺者','何してくるかわからないミステリアスな策略家']
+targets = ['先陣きって荒らしていく切り込み隊長','チームの軸として引っ張っていくアタッカー','敵の攻撃を受けて、サイクルを回すタンク','じわじわと敵を追い詰める仕事人','後続を支援する起点作りの職人','必殺のコンボで相手を倒す暗殺者']
 
 
 if st.sidebar.button("GUESS!!"):
     # 入力された説明変数の表示
-    st.write('## Input Value')
+    st.write('## あなたの身長・体重')
     your_df = pd.DataFrame(your_feature, index=["あなた"])
     st.write(your_df[['your_height','your_weight']])
 
     # 予測の実行
-    response = requests.post("https://pokemon-predict.onrender.com/guess", json=your_feature) #デプロイ用
-    #response = requests.post("http://localhost:5002/guess", json=your_feature) #ローカル用
+    #response = requests.post("https://pokemon-predict.onrender.com/guess", json=your_feature) #デプロイ用
+    response = requests.post("http://localhost:5003/guess", json=your_feature) #ローカル用
     battle_style = response.json()["prediction"]
     all = response.json()
 
@@ -51,9 +51,10 @@ if st.sidebar.button("GUESS!!"):
     pokemon_image = response.json()["pokemon_image"]
 
     # 予測結果の出力
-    st.write('# 身長・体重から推測')
-    st.write('あなたに似ているポケモンはきっと',str(pokemon),'です!')
-    
+    st.write('## 推測結果')
+    st.write('あなたをポケモンに例えると<span style="color: coral">',str(pokemon),'</span>で', unsafe_allow_html=True)
+    st.write('その戦闘スタイルはきっと<span style="color: coral">',str(targets[int(battle_style)]),'</span>です', unsafe_allow_html=True)
+
     # ポケモンの身長・体重を出力
     pokemon_df = pd.DataFrame(all, index=[pokemon])
     pokemon_df = pokemon_df[['pokemon_height','pokemon_weight']]
@@ -107,8 +108,8 @@ if st.sidebar.button("GUESS!!"):
     st.pyplot(plt)
 
     # 予測結果の出力(戦闘スタイル)
-    st.write('# 戦闘スタイル')
-    st.write('あなたの戦闘スタイルはきっと',str(targets[int(battle_style)]),'です')
+    #st.write('# 戦闘スタイル')
+    #st.write('あなたの戦闘スタイルはきっと',str(targets[int(battle_style)]),'です')
     
     # 以下いらないコードなのでテキスト化
 

@@ -9,6 +9,9 @@ import pickle
 from typing import Generic, TypeVar
 import random
 
+import lightgbm as lgb
+from sklearn.metrics import accuracy_score
+
 # インスタンス化
 app = FastAPI()
 
@@ -37,10 +40,8 @@ class pokemon_data(BaseModel):
 pokemon_df = pd.read_csv("./pokemon_data2.csv")
 
 # 学習済みのモデルの読み込み
-model = pickle.load(open('./models/pokemon_model', 'rb')) #相対パス
-#model = pickle.load(open('https://github.com/kelcy0806/pokemon_similer/blob/master/models/pokemon_model', 'rb')) #絶対パス
-
-
+#model = pickle.load(open('./models/Pokemon_model', 'rb')) #ランダムフォレスト
+model = lgb.Booster(model_file='./models/Pokemon_model_LightBGM.txt') #LightGBM
 
 # トップページ
 @app.get('/')
@@ -71,10 +72,10 @@ def make_predictions(features:your_feature):
     random_values = {key: np.random.randint(50, 120) for key in ['HP','こうげき','ぼうぎょ','とくこう','とくぼう','すばやさ']}
 
     random_values['HP'] = random_values['HP']+int(features.ぼうぎょ*random_values['HP']/2)
-    random_values['こうげき'] = random_values['こうげき']+int(features.HP*random_values['こうげき']/2)-int(features.こうげき*random_values['こうげき']/2)
-    random_values['ぼうぎょ'] = random_values['ぼうぎょ']+int(features.HP*random_values['ぼうぎょ']/2)+int(features.こうげき*random_values['ぼうぎょ']/2)
-    random_values['とくこう'] = random_values['とくこう']-int(features.HP*random_values['とくこう']/2)-int(features.こうげき*random_values['とくこう']/2)
-    random_values['とくぼう'] = random_values['とくぼう']-int(features.HP*random_values['とくぼう']/2)+int(features.こうげき*random_values['ぼうぎょ']/2)
+    random_values['こうげき'] = random_values['こうげき']+int(features.HP*random_values['こうげき']/3)-int(features.こうげき*random_values['こうげき']/3)
+    random_values['ぼうぎょ'] = random_values['ぼうぎょ']+int(features.HP*random_values['ぼうぎょ']/3)+int(features.こうげき*random_values['ぼうぎょ']/3)
+    random_values['とくこう'] = random_values['とくこう']-int(features.HP*random_values['とくこう']/3)-int(features.こうげき*random_values['とくこう']/3)
+    random_values['とくぼう'] = random_values['とくぼう']-int(features.HP*random_values['とくぼう']/3)+int(features.こうげき*random_values['ぼうぎょ']/3)
     random_values['すばやさ'] = random_values['すばやさ']+int(features.ぼうぎょ*random_values['すばやさ']/2)
 
     # 合計が目標値になるように調整
@@ -89,10 +90,25 @@ def make_predictions(features:your_feature):
             random_values[key_to_adjust] += 1
 
     #random_values_list = np.array(random_values.values(),np.float32)
-    #a = {'prediction':model.predict(random_values_list)}
+    
+    #戦闘スタイルの推測()
+    guess_data ={'高さ':float(features.your_height),
+                 '重さ':float(features.your_weight)}
+    guess_data.update(random_values)
+    guess_data = pd.DataFrame([guess_data])
 
+    pred = model.predict(guess_data)
+ 
+    #種族値の合計値を追加
     random_values['合計'] = int(random_values['HP']+random_values['こうげき']+random_values['ぼうぎょ']+random_values['とくこう']+random_values['とくぼう']+random_values['すばやさ'])
-    random_values.update(prediction=model.predict([[random_values['HP'],random_values['こうげき'], random_values['ぼうぎょ'], random_values['とくこう'],random_values['とくぼう'],random_values['すばやさ']]])[0])
+    
+    #予想結果を追加
+    random_values.update(prediction=int(pred.argmax()))
+
+    #予測の実行(ランダムフォレスト版)
+    #random_values.update(prediction=model.predict([[features.your_height,features.your_weight,random_values['HP'],random_values['こうげき'], random_values['ぼうぎょ'], random_values['とくこう'],random_values['とくぼう'],random_values['すばやさ']]])[0])
+    
+    # 身長・体重の似たポケモンのデータを追加
     random_values.update(Pokemon=str(closest_pokemon['名前']),pokemon_image=str(closest_pokemon['画像URL']),pokemon_height=float(closest_pokemon['高さ']),pokemon_weight=float(closest_pokemon['重さ']))
 
     return(random_values)
